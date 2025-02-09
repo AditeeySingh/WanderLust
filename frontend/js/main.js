@@ -124,8 +124,11 @@ async function searchFlights(event) {
     }
 
     try {
+        // Replace localhost:3002 with your Render backend URL
+        const API_URL = 'https://wanderlust-1-apw2.onrender.com';
+
         // Make API request to search flights
-        const response = await fetch('http://localhost:3002/api/flights/search', {
+        const response = await fetch(`${API_URL}/api/flights/search`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

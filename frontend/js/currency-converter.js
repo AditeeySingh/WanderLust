@@ -10,9 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Common currencies to show at the top of the list
     const commonCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'CNY', 'INR'];
 
+    // Update the exchange rates API endpoint
     async function fetchExchangeRates(base) {
         try {
-            const response = await fetch(`http://localhost:3002/api/exchange-rates/${base}`);
+            const response = await fetch(`${API_URL}/api/exchange-rates/${base}`);
             const data = await response.json();
             return data.conversion_rates;
         } catch (error) {
