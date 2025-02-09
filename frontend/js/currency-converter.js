@@ -15,13 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update the exchange rates API endpoint
     async function fetchExchangeRates(base) {
         try {
-            const response = await fetch(`${API_URL}/api/exchange-rates/${base}`, {
-                method: 'GET'
-            });
+            console.log('Fetching rates for:', base);
+            const response = await fetch(`${API_URL}/api/exchange-rates/${base}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const data = await response.json();
+            console.log('Rates received:', data);
             return data.conversion_rates;
         } catch (error) {
             console.error('Error fetching exchange rates:', error);
+            alert('Failed to fetch exchange rates. Please try again.');
             return null;
         }
     }

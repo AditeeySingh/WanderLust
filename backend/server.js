@@ -623,15 +623,8 @@ const AMADEUS_BASE_URL_V2 = 'https://test.api.amadeus.com/v2';
             });
 
             // Function to convert city names to IATA codes
-            function getCityIATACode(cityName) {
-                console.log('Looking up IATA code for:', cityName);
-                const code = cityToIATACode[cityName];
-                if (!code) {
-                    console.log('Available cities:', Object.keys(cityToIATACode));
-                    throw new Error(`No IATA code found for city: ${cityName}`);
-                }
-                console.log('Found IATA code:', code);
-                return code;
+            function getCityIATACode(city) {
+                return cityToIATACode[city] || null;
             }
 
             //Flight Search API Endpoint
@@ -647,17 +640,15 @@ const AMADEUS_BASE_URL_V2 = 'https://test.api.amadeus.com/v2';
                         travelClass = 'ECONOMY'
                     } = req.body;
             
-                    console.log('Flight Search Request:', {
-                        origin,
-                        destination,
-                        departureDate,
-                        returnDate,
-                        adults,
-                        travelClass
-                    });
+                    console.log('Flight Search Request:', req.body);
             
-                    const originIATA = getCityIATACode(origin);
-                    const destinationIATA = getCityIATACode(destination);
+                    // Get IATA codes
+                    const originIATA = cityToIATACode[origin];
+                    const destinationIATA = cityToIATACode[destination];
+            
+                    if (!originIATA || !destinationIATA) {
+                        throw new Error('Invalid origin or destination city');
+                    }
             
                     // Generate mock flights
                     const outboundFlights = generateMockFlights(originIATA, destinationIATA, departureDate);
@@ -704,9 +695,17 @@ const AMADEUS_BASE_URL_V2 = 'https://test.api.amadeus.com/v2';
             app.get('/api/exchange-rates/:baseCurrency', async (req, res) => {
                 try {
                     const { baseCurrency } = req.params;
+                    console.log('Exchange rate request for:', baseCurrency);
+                    
+                    if (!process.env.EXCHANGE_RATE_API_KEY) {
+                        throw new Error('Exchange rate API key not configured');
+                    }
+
                     const data = await getExchangeRates(baseCurrency);
+                    console.log('Exchange rate response:', data);
                     res.json(data);
                 } catch (error) {
+                    console.error('Exchange Rate Error:', error);
                     res.status(500).json({
                         success: false,
                         error: error.message
