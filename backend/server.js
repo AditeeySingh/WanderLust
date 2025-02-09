@@ -15,7 +15,11 @@ console.log('Checking API Keys:', {
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: ['https://your-vercel-frontend-url.vercel.app', 'http://localhost:3000'],
+    methods: ['GET', 'POST'],
+    credentials: true
+}));
 app.use(express.json());
 
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;

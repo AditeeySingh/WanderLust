@@ -1,3 +1,5 @@
+const API_URL = 'https://wanderlust-1-apw2.onrender.com';
+
 document.addEventListener('DOMContentLoaded', () => {
     const amount = document.getElementById('amount');
     const fromCurrency = document.getElementById('fromCurrency');
