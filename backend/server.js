@@ -15,11 +15,19 @@ console.log('Checking API Keys:', {
 
 const app = express();
 
+// CORS configuration
 app.use(cors({
-    origin: ['https://your-vercel-frontend-url.vercel.app', 'http://localhost:3000'],
-    methods: ['GET', 'POST'],
+    origin: [
+        'https://wander-lust-chi.vercel.app/',  // Your Vercel frontend URL
+        'http://localhost:3000',                // Local development
+        'https://wanderlust-frontend.vercel.app',
+        '*'                                     // Allow all origins temporarily for testing
+    ],
+    methods: ['GET', 'POST', 'OPTIONS'],        // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
+
 app.use(express.json());
 
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
@@ -360,6 +368,7 @@ const AMADEUS_BASE_URL_V2 = 'https://test.api.amadeus.com/v2';
     });  
 
 
+           
             // City to IATA code mapping
             const cityToIATACode = {
                 'Mumbai, India': 'BOM',

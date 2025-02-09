@@ -131,7 +131,9 @@ async function searchFlights(event) {
         const response = await fetch(`${API_URL}/api/flights/search`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                // Remove credentials if not needed
+                // 'credentials': 'include'
             },
             body: JSON.stringify({
                 origin,
