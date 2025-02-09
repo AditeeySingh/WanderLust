@@ -15,18 +15,16 @@ console.log('Checking API Keys:', {
 
 const app = express();
 
-// CORS configuration
+// CORS configuration - place this BEFORE any routes
 app.use(cors({
-    origin: [
-        'https://wander-lust-chi.vercel.app/',  // Your Vercel frontend URL
-        'http://localhost:3000',                // Local development
-        'https://wanderlust-frontend.vercel.app',
-        '*'                                     // Allow all origins temporarily for testing
-    ],
-    methods: ['GET', 'POST', 'OPTIONS'],        // Allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    origin: true, // Allow all origins temporarily
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+    credentials: false // Set to false since we're not using cookies
 }));
+
+// Enable pre-flight requests for all routes
+app.options('*', cors());
 
 app.use(express.json());
 

@@ -16,12 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchExchangeRates(base) {
         try {
             const response = await fetch(`${API_URL}/api/exchange-rates/${base}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Remove credentials if not needed
-                    // 'credentials': 'include'
-                }
+                method: 'GET'
             });
             const data = await response.json();
             return data.conversion_rates;
