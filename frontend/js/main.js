@@ -88,13 +88,15 @@ function displayFlightResults(data) {
     });
 }
 
+// At the top of the file, define the API URL
+const API_URL = 'https://wanderlust-1-apw2.onrender.com'; // Your Render backend URL
+
 /**
  * Handles the flight search form submission and API call
  * @param {Event} event - The form submission event
  */
 async function searchFlights(event) {
-    // Prevent default form submission
-    if (event) event.preventDefault();
+    event.preventDefault();
     
     // Get DOM elements
     const loadingIndicator = document.getElementById('loadingIndicator');
@@ -102,7 +104,7 @@ async function searchFlights(event) {
     
     // Show loading state
     if (loadingIndicator) {
-        loadingIndicator.style.display = 'flex';
+        loadingIndicator.style.display = 'block';
     }
     if (resultsContainer) {
         resultsContainer.innerHTML = '';
@@ -124,10 +126,6 @@ async function searchFlights(event) {
     }
 
     try {
-        // Replace localhost:3002 with your Render backend URL
-        const API_URL = 'https://wanderlust-1-apw2.onrender.com';
-
-        // Make API request to search flights
         const response = await fetch(`${API_URL}/api/flights/search`, {
             method: 'POST',
             headers: {
@@ -143,39 +141,12 @@ async function searchFlights(event) {
             })
         });
 
-        // Handle unsuccessful response
-        if (!response.ok) {
-            throw new Error('Failed to fetch flight data');
-        }
-
-        // Parse response data
+        if (!response.ok) throw new Error('Flight search failed');
         const data = await response.json();
-        
-        // Hide loading indicator
-        if (loadingIndicator) {
-            loadingIndicator.style.display = 'none';
-        }
-
-        // Display results
         displayFlightResults(data);
-
     } catch (error) {
-        console.error('Error searching flights:', error);
-        
-        // Hide loading indicator
-        if (loadingIndicator) {
-            loadingIndicator.style.display = 'none';
-        }
-
-        // Show error message to user
-        if (resultsContainer) {
-            resultsContainer.innerHTML = `
-                <div class="error-message">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <p>Unable to fetch flight information. Please try again.</p>
-                </div>
-            `;
-        }
+        console.error('Error:', error);
+        showError('Unable to fetch flight information');
     }
 }
 
@@ -210,7 +181,7 @@ function setupCityAutocomplete(inputId) {
         debounceTimer = setTimeout(async () => {
             try {
                 // Fetch city suggestions from API
-                const response = await fetch(`http://localhost:3002/api/cities/suggest/${encodeURIComponent(query)}`);
+                const response = await fetch(`${API_URL}/api/cities/suggest?q=${encodeURIComponent(query)}`);
                 const suggestions = await response.json();
                 
                 // Display suggestions if any exist
@@ -297,7 +268,7 @@ function setupCityAutocomplete(inputId) {
     input.addEventListener('focus', async () => {
         const query = input.value.trim();
         if (query.length >= 2) {
-            const response = await fetch(`http://localhost:3002/api/cities/suggest/${encodeURIComponent(query)}`);
+            const response = await fetch(`${API_URL}/api/cities/suggest?q=${encodeURIComponent(query)}`);
             const suggestions = await response.json();
             if (suggestions.length > 0) {
                 suggestionsContainer.innerHTML = suggestions.map(city => `
@@ -347,3 +318,45 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up date input constraints
     setupDateInputs();
 });
+
+// Update the weather API call
+async function getWeather(city) {
+    try {
+        const response = await fetch(`${API_URL}/api/weather/${encodeURIComponent(city)}`);
+        if (!response.ok) throw new Error('Weather fetch failed');
+        return await response.json();
+    } catch (error) {
+        console.error('Weather API Error:', error);
+        return null;
+    }
+}
+
+// Update the distance API call
+async function getDistance(origin, destination) {
+    try {
+        const response = await fetch(`${API_URL}/api/distance`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ origin, destination })
+        });
+        if (!response.ok) throw new Error('Distance calculation failed');
+        return await response.json();
+    } catch (error) {
+        console.error('Distance API Error:', error);
+        return null;
+    }
+}
+
+// Update city suggestions API
+async function getCitySuggestions(query) {
+    try {
+        const response = await fetch(`${API_URL}/api/cities/suggest?q=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error('City suggestion fetch failed');
+        return await response.json();
+    } catch (error) {
+        console.error('City Suggestion API Error:', error);
+        return [];
+    }
+}
